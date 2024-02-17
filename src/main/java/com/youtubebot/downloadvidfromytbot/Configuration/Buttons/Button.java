@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Button {
@@ -19,6 +20,8 @@ public class Button {
     public static final InlineKeyboardButton SETTINGS_BUTTON = new InlineKeyboardButton("Settings");
 
     public static final String QUALITY = "Качество: ";
+
+    public static final HashMap<String, Integer> QUALITY_MAP = new HashMap<>();
 
     public static InlineKeyboardMarkup inlineMarkup() {
         START_BUTTON.setCallbackData("/start");
@@ -46,8 +49,20 @@ public class Button {
         List<KeyboardRow> keyboardRows = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
 
-        row.add(QUALITY + userData.getQuality());
+        switch (userData.getQuality()) {
 
+            case 18 -> {
+                row.add(QUALITY + "360p");
+            }
+            case 22 -> {
+                row.add(QUALITY + "720p");
+            }
+
+            default -> {
+                System.out.println("Error in quality");
+                row.add(QUALITY + "?");
+            }
+        }
         keyboardRows.add(row);
 
         replyKeyboardMarkup.setKeyboard(keyboardRows);
@@ -61,19 +76,21 @@ public class Button {
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("240p"); // 133
         row.add("360p"); //18
 
         KeyboardRow row2 = new KeyboardRow();
-
         row2.add("720p"); //22
-        row2.add("1080p"); //37
+
 
         keyboardRows.add(row);
         keyboardRows.add(row2);
 
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         replyKeyboardMarkup.setResizeKeyboard(true);
+
+        QUALITY_MAP.put("360p", 18);
+        QUALITY_MAP.put("720p", 22);
+
 
         return replyKeyboardMarkup;
     }

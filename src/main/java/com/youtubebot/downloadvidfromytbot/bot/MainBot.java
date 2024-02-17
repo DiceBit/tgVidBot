@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static com.youtubebot.downloadvidfromytbot.Configuration.Buttons.Button.QUALITY_MAP;
+
 // TODO: 13-Feb-24 Сделать форматы на выбор 
 @Component
 public class MainBot extends TelegramLongPollingBot implements BotCommands {
@@ -58,22 +60,25 @@ public class MainBot extends TelegramLongPollingBot implements BotCommands {
     private final String SETTINGS = "/settings";
 
     private final String QUALITY = "Качество: ";
-    private final String CHANGE_QUALITY = ALL_QUALITY;
+    private final String CHANGE_QUALITY = "Смена качества";
 
     @Override
     public void onUpdateReceived(Update update) {
 
-        if (!update.hasMessage() || !update.getMessage().hasText()) {
-            return;
-        }
+        if (!update.hasMessage() || !update.getMessage().hasText()) return;
 
         var msg = update.getMessage().getText();
         var message = msg.startsWith("/") ? msg.split(" ")[0] : msg;
         var chatId = update.getMessage().getChatId();
         var user = update.getMessage().getFrom();
 
-        if (message.contains(QUALITY)) {
-            message = QUALITY;
+        if (message.contains(QUALITY)) message = QUALITY;
+
+        if (ALL_QUALITY.contains(message)) {
+            UserData userData = userRepository.findByUserId(user.getId());
+            userData.setQuality(QUALITY_MAP.get(message));
+            userRepository.save(userData);
+            message = SETTINGS;
         }
 
         switch (message) {
@@ -116,7 +121,7 @@ public class MainBot extends TelegramLongPollingBot implements BotCommands {
                     return;
                 }
                 String videoId = args[1].split("v=")[1];
-                String title = downloadVideo(videoId);
+                String title = downloadVideo(videoId, userRepository.findByUserId(user.getId()));
                 sendFile(chatId, title);
 
             }
@@ -124,12 +129,15 @@ public class MainBot extends TelegramLongPollingBot implements BotCommands {
             case QUALITY -> {
                 sendMessage(chatId, "Выбирите качество", Button.changeQuality());
             }
-            case CHANGE_QUALITY -> {
-
-            }
             case SETTINGS -> {
                 UserData userData = userRepository.findByUserId(user.getId());
                 sendMessage(chatId, SETTING_COMMAND, Button.replyKeyboardMarkup(userData));
+                try {
+                    execute(new DeleteMessage(String.valueOf(chatId), update.getMessage().getMessageId() - 1));
+                    execute(new DeleteMessage(String.valueOf(chatId), update.getMessage().getMessageId()));
+                } catch (TelegramApiException e) {
+                    System.out.println("Ошибка удаления сообщения " + e.getMessage());
+                }
             }
 
             case CLEAR -> {
@@ -199,7 +207,7 @@ public class MainBot extends TelegramLongPollingBot implements BotCommands {
 
     }
 
-    private String downloadVideo(String videoId) {
+    private String downloadVideo(String videoId, UserData userData) {
         //4vZYnQcM070 - new vid //its work
         //dQw4w9WgXcQ - old vid //its work
         File outputDir = new File("C:/Users/danii/Downloads");
@@ -217,7 +225,7 @@ public class MainBot extends TelegramLongPollingBot implements BotCommands {
         //details.thumbnails().forEach(img -> System.out.println("Thumbnail: " + img));
 
         //Formats = https://gist.github.com/sidneys/7095afe4da4ae58694d128b1034e01e2
-        Format videoFormat = video.findFormatByItag(18);
+        Format videoFormat = video.findFormatByItag(userData.getQuality());
         if (videoFormat != null) {
             System.out.println(videoFormat.url());
         }
@@ -236,6 +244,7 @@ public class MainBot extends TelegramLongPollingBot implements BotCommands {
     public String getBotUsername() {
         return "VidDownloadBot";
     }
+
     private void sendMessage(Long chatId, String msgText, ReplyKeyboardMarkup replyKeyboardMarkup) {
 
         var sendMsg = new SendMessage();

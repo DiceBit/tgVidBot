@@ -30,7 +30,8 @@ public interface BotCommands {
             Комманды:
             /download [ссылка] - позволяет скачать видео с YouTube
             Формат ссылки - https://www.youtube.com/watch?v=abc123
-                                    
+                                
+            /settings - настройка качества скачивания видео                     
             /link - ссылка на бота
             /clear - очистка всей переписки
             """;
@@ -39,5 +40,5 @@ public interface BotCommands {
 
     String SETTING_COMMAND = "Настройка качества скачивания видео";
 
-    String ALL_QUALITY = "240p 360p 720p 1080p";
+    String ALL_QUALITY = "360p 720p";
 }
