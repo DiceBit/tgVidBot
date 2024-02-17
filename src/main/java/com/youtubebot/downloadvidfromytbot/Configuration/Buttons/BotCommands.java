@@ -10,6 +10,7 @@ public interface BotCommands {
         new BotCommand("/start", "Start bot"),
         new BotCommand("/link", "Link to bot"),
         new BotCommand("/download", "Download YouTube video"),
+        new BotCommand("/settings", "Setting"),
         new BotCommand("/clear", "Clear all message"),
         new BotCommand("/help", "Help")
     );
@@ -34,4 +35,9 @@ public interface BotCommands {
             /clear - очистка всей переписки
             """;
 
+    String ERROR_COMMAND = "Такой комманды нет, воспользуйтесь коммандой /help для получения справки";
+
+    String SETTING_COMMAND = "Настройка качества скачивания видео";
+
+    String ALL_QUALITY = "240p 360p 720p 1080p";
 }

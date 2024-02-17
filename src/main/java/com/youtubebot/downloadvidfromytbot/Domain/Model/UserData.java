@@ -18,13 +18,14 @@ public class UserData {
     private String firstName;
     private String lastName;
     private String languageCode;
+    private int quality;
 
     private String chatId;
     private int firstMsg;
 
     public UserData(Long userId,
                     String userName, String firstName, String lastName,
-                    String languageCode, String chatId, int firstMsg) {
+                    String languageCode, String chatId, int firstMsg, int quality) {
 
         this.userId = userId;
         this.userName = "@"+userName;
@@ -33,5 +34,6 @@ public class UserData {
         this.languageCode = languageCode;
         this.chatId = chatId;
         this.firstMsg = firstMsg;
+        this.quality = quality;
     }
 }
