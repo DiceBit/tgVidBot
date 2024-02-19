@@ -52,6 +52,14 @@
             <version>3.2.3</version>
         </dependency>
 
+        <!-- Google Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.0.0-jre</version>
+        </dependency>
+
+
         <!-- Telegram Bot -->
         <dependency>
             <groupId>org.telegram</groupId>
